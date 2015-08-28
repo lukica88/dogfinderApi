@@ -1,0 +1,54 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="~/Scripts/jquery-1.8.2.js"></script>
+<script src="~/Scripts/knockout-2.2.0.js"></script>
+<script>
+    var url = "http://localhost:49816/api/Dog";
+
+    var Model = null;
+    var Model = function() {
+        var self = this;
+        self.dogs = ko.observableArray([]);
+        self.xx = function(data) {
+            sessionStorage.setItem("dogfinder.id", data.id);
+            document.location.href = 'PronasaoPas.html';
+        };
+            
+    };
+
+    function Init(){
+        $.getJSON(url  +'/getAll',function(data){
+            var dogs = [];
+            $.each(data,function(i) {
+                dogs.push(
+                {
+                    name: data[i].Name,
+                    kind: data[i].Kind,
+                    id: data[i]._Id,
+                    slika1: data[i].Slika1
+                });
+            });
+            Model.dogs(dogs);
+        });
+    }
+
+    $(function(){
+        sessionStorage.removeItem("dogfinder.id");
+        Init();
+        Model = new Model();
+        ko.applyBindings(Model);
+    });
+</script>
+
+<ul data-bind="foreach: dogs">
+    <li>
+        <span data-bind="text: name"></span>
+        <span data-bind="text: kind"> </span>
+        <img width="100px" data-bind="attr:{src:  slika1}, click: $root.xx" />
+    </li>
+</ul>

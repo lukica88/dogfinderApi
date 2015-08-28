@@ -1,0 +1,117 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Izgubio";
+    Layout = null;
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="~/Scripts/jquery-1.8.2.js"></script>
+<script src="~/Scripts/knockout-2.2.0.js"></script>
+<script>
+    var Model = function() {
+        var self = this;
+        self.ime = ko.observable();
+        self.visina = ko.observable();
+        self.tezina = ko.observable();
+        self.slika1 = ko.observable();
+        self.slika2 = ko.observable();
+        self.telefon = ko.observable();
+        self.info = ko.observable();
+        self.grad = ko.observable();
+        self.rase = ko.observableArray();
+        self.rasa = ko.observable();
+
+        self.uploadImage1 = function() {
+            var file = document.querySelector('#slika1').files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function() {
+                self.slika1(reader.result);
+            };
+        };
+
+        self.uploadImage2 = function () {
+            var file = document.querySelector('#slika2').files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onloadend = function () {
+                self.slika2(reader.result);
+            };
+        };
+       
+        self.submit = function() {
+            var data = {
+                ime: self.ime(),
+                visina: self.visina(),
+                tezina: self.tezina(),
+                slika1: self.slika1(),
+                slika2: self.slika2(),
+                rasa: self.rasa(),
+                telefon: self.telefon(),
+                info: self.info(),
+                grad: self.grad()
+        };
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "http://localhost:49816/api/Dog/izgubio",
+                });
+        };
+
+      Init(self.rase);
+    };
+
+    function Init(rase) {
+        $.ajax({
+            type: "Get",
+            url: "http://localhost:49816/api/Dog/rase",
+            success: function (data) {
+                if(rase){
+                    rase(data);
+                }
+            }
+        });
+    };
+
+    $(function () {
+        var model = new Model();
+        Init();
+        ko.applyBindings(model, document.getElementById('mainDiv'));
+    });
+</script>
+<br/>
+<div id="mainDiv">
+    <div class="form-group">
+        <label for="ime">Ime</label>
+        <input class="form-control" id="ime" data-bind="value: ime" placeholder="Unesite ime psa...">
+    </div>
+    <div class="form-group">
+        <label for="tezina">Tezina</label>
+        <input class="form-control" type="number" data-bind="value: tezina" placeholder="Unesite tezinu psa u kg...">
+    </div>
+    <div class="form-group">
+        <label for="rasa">Rasa</label>
+        <select class="form-control"  id="rasa" data-bind="options: rase, value: rasa" ></select>
+    </div>
+    <div class="form-group">
+        <label for="telefon">Telefon:</label>
+        <input class="form-control" id="telefon" type="tel" data-bind="value: telefon" placeholder="Unesite telefon vlasnika...">
+    </div>
+    <div class="form-group">
+        <label for="telefon">Grad:</label>
+        <input class="form-control" id="grad" type="tel" data-bind="value: grad" placeholder="Unesite grad u kome je pas nestao...">
+    </div>
+    <div class="form-group">
+        <label for="opste">Info:</label>
+        <input class="form-control" id="info" type="text" data-bind="value: info" placeholder="Pas nestao 5tog sep u 4h ispred hale pionir...">
+    </div>
+    <div class="form-group">
+        <label for="slika1">Slika psa(1)</label>
+        <input type="file" id="slika1" data-bind="event:{change:uploadImage1}">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputFile2">Slika psa(2)</label>
+        <input type="file" id="slika2" data-bind="event:{change:uploadImage2}">
+    </div>
+    <button type="submit" data-bind="click: $data.submit" class=" btn btn-default">Submit</button>
+</div>

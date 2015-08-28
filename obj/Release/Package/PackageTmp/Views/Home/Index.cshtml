@@ -1,0 +1,49 @@
+﻿<div id="body">
+
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Scripts/knockout-2.2.0.js"></script>
+    <script>
+        var url = "http://localhost:49816/api/Dog";
+        var Model = null;
+        var Model = function() {
+            var self = this;
+            self.dogs = ko.observableArray([]);
+            self.xx = function (data) {
+                sessionStorage.setItem("id", data.id);
+            };
+            
+        };
+
+        function getAll(){
+            $.getJSON(url  +'/getAll',function(data){
+                var dogs = [];
+                $.each(data,function(i) { 
+                    dogs.push(
+                    {
+                        name: data[i].Name,
+                        kind: data[i].Kind,
+                        id: data[i]._Id,
+                        slika1: data[i].Slika1
+                    });
+                });
+                Model.dogs(dogs);
+            });
+        }
+
+        jQuery(function(){
+            Model = new Model();
+            ko.applyBindings(Model,document.getElementById('mojdiv'));
+        });
+    </script>
+    <div id="mojdiv">
+        <ul data-bind="foreach: dogs">
+            <li>
+                <span data-bind="text: name"></span>
+                <span data-bind="text: kind"> </span>
+                <img data-bind="attr:{src: 'data:image/png;base64,' + slika1}, click:$root.xx" />
+            </li>
+        </ul>
+        <br>
+        <button onclick="getAll()">getAll</button>
+    </div>
+</div>
