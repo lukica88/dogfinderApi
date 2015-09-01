@@ -66,3 +66,8 @@ E:\Projects\dogfinderapi\dogfinderapi2\obj\Debug\dogfinderapi2.pdb
 E:\Projects\dogfinderapi\dogfinderapi2\bin\MySql.Data.dll
 E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Http.dll
 E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Http.xml
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Net.Http.Formatting.dll
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Http.WebHost.dll
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Routing.dll
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Net.Http.Formatting.xml
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Http.WebHost.xml

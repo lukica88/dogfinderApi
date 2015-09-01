@@ -4,40 +4,59 @@
     ViewBag.Title = "title";
     Layout = null;
 }
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <script src="~/Scripts/jquery-1.8.2.js"></script>
 <script src="~/Scripts/knockout-2.2.0.js"></script>
 <script>
+    var url = "http://dogfinderapi.com/api/Dog";
 
-    function Model(name, age, weight,slika1) {
+    function Model(name, age, weight,slika1, desc, slika2, mob, rasa, id) {
         var self = this;
-        self.Name = ko.observable(name);
-        self.Age = ko.observable(age);
-        self.Weight = ko.observable(weight);
+        self.id = ko.observable(id);
+        self.name = ko.observable(name);
+        self.age = ko.observable(age);
+        self.weight = ko.observable(weight);
         //self.Height = ko.observable(id);
-        //self.Description = ko.observable(id);
-        //self.Kind = ko.observable(id);
+        self.description = ko.observable(desc);
+        self.kind = ko.observable(rasa);
         //self.Found = ko.observable(id);
         //self.dateString = ko.observable(id);
         //self.Deleted = ko.observable(id);
         //self.Vlasnik = ko.observable(id);
         //self.Email = ko.observable(id);
-        //self.Mob = ko.observable(id);
-        self.Slika1 = ko.observable(slika1);
-        //self.Slika2 = ko.observable(id);
+        self.mob = ko.observable(mob);
+        self.slika1 = ko.observable(slika1);
+        self.slika2 = ko.observable(slika2);
         //self.Opstina = ko.observable(id);
         //self.Grad = ko.observable(id);
         //self.Drzava = ko.observable(id);
-     };
+
+        self.pronasao = function() {
+            var isOk = confirm("Da li ste sigurni da zelite da izbrisete pasa iz base podataka?");
+            if (isOk === true) {
+                $.getJSON(url+ '/pronasao?id=' + id, function (serverData) {
+                    if (200 === serverData) {
+                        alert('Hvala sto ste koristili dogfinder!');
+                        document.location.href = 'http://dogfinderapi.com';
+                    } else {
+                        alert('Greska usled slanja');
+                    }
+                });
+            };
+        };
+    };
 
     function Init(id) {
         var retModel;
-        $.getJSON('http://localhost:49816/api/Dog/getdog?id=' + id,function(serverData) {
-            retModel = new Model(serverData.Name, serverData.Age, serverData.Weight, serverData.Slika1);
+        $.getJSON( url +'/getdog?id=' + id,function(serverData) {
+            retModel = new Model(serverData.Name, serverData.Age, serverData.Weight,
+                serverData.Slika1, serverData.Description, serverData.Slika2, serverData.Mob,
+                serverData.Kind, serverData._Id);
             ko.applyBindings(retModel);
         });
     };
     jQuery(function () {
-        Init(sessionStorage.getItem("dogfinder.id") || 3);
+        Init(sessionStorage.getItem("dogfinder.id") || 1);
     });
 
 </script>
@@ -45,20 +64,36 @@
 <div>
     <table>
         <tr>
-            <td>Ime</td>
-            <td><span data-bind="text: Name"></span></td>
+            <td>Ime:</td>
+            <td><span data-bind="text: name"></span></td>
         </tr>
         <tr>
-            <td>Starost</td>
-            <td><span data-bind="text: Age"></span></td>
+            <td>Rasa:</td>
+            <td><span data-bind="text: kind"></span></td>
         </tr>
         <tr>
-            <td>Tezina</td>
-            <td><span data-bind="text: Weight"></span></td>
+            <td>Starost:</td>
+            <td><span data-bind="text: age"></span></td>
         </tr>
         <tr>
-            <td>Slika 1</td>
-            <td><img data-bind="attr:{src: 'data:image/png;base64,' + $data.Slika1()}" /></td>
+            <td>Tezina:</td>
+            <td><span data-bind="text: weight"></span></td>
+        </tr>
+        <tr>
+            <td>Opis:</td>
+            <td><span data-bind="text: description"></span></td>
+        </tr>
+        <tr>
+            <td><img width="100px" data-bind="attr:{src:  slika1}" /></td>
+            <td><img width="100px" data-bind="attr:{src:  slika2}" /></td>
+        </tr>
+        <tr>
+            <td>Telefon:</td>
+            <td><span data-bind="text: mob"></span></td>
+        </tr>
+        <tr>
+            <td>Pas je pronadjen:</td>
+            <td><button class=" btn btn-info" data-bind="click: pronasao">Pronadjen</button></td>
         </tr>
     </table>
 </div>

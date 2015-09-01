@@ -42,6 +42,7 @@ namespace dogfinderapi2
         }
         private static readonly string MySqlConnectionString = ConfigurationManager.ConnectionStrings["MySQL"].ConnectionString;
         public static MySqlConnection mySqlConnection = new MySqlConnection(MySqlConnectionString);
+        
         #endregion
 
         #region API
@@ -62,11 +63,6 @@ namespace dogfinderapi2
             int numOfColumns = 0;
             try
             {
-                byte[] slika = Convert.FromBase64String(dogModel.slika1);
-                dogModel.slika1 = Encoding.UTF8.GetString(slika);
-
-                slika = Convert.FromBase64String(dogModel.slika2);
-                dogModel.slika2 = Encoding.UTF8.GetString(slika);
                 mySqlConnection.Open();
                 string sql = string.Format(@"insert into dogfinderdb.dogs(name, weight, description,kind, slika1, slika2, grad)
                                              values('{0}',{1},'{2}', '{3}', '{4}', '{5}', '{6}')", dogModel.ime, dogModel.tezina, dogModel.info,
@@ -87,6 +83,48 @@ namespace dogfinderapi2
             }
            return numOfColumns != 0;
         }
+
+        public static List<string> GetRaseAll()
+        {
+            List<string> raseList = new List<string>();
+            raseList.Add("-- Izaberite rasu --");
+            raseList.Add("Mesanac");
+
+            try
+            {
+                mySqlConnection.Open();
+                MySqlCommand command = new MySqlCommand("Select Ime from rase", mySqlConnection);
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                         string rasa = reader.GetString("Ime");
+                         raseList.Add(rasa);}
+                }
+            }
+            finally
+            {
+                mySqlConnection.Close();
+            }
+            return raseList;
+        }
+
+        public static bool Pronasao(int id)
+        {
+            int isOk = 0;
+            try
+            {
+                mySqlConnection.Open();
+                MySqlCommand command = new MySqlCommand("Update dogs set Found = 1 where _Id=" + id, mySqlConnection);
+                isOk = command.ExecuteNonQuery();
+                RefreshCache();
+            }
+            finally
+            {
+                mySqlConnection.Close();
+            }
+            return isOk == 1;
+        }
         #endregion
 
         #region Helpers
@@ -105,7 +143,7 @@ namespace dogfinderapi2
                         Dog dog = new Dog();
                         dog._Id = reader.GetString(0);
                         dog.Name = reader.GetString("Name");
-                        dog.Slika1 = GetSlika(reader, 1);
+                        dog.Slika1 = reader.GetString("Slika1");
                         dog.Age = reader.GetString("Age");
                         dog.Weight = reader.GetString("Weight");
                         dog.Height = reader.GetString("Height");
@@ -116,12 +154,12 @@ namespace dogfinderapi2
                         dog.Vlasnik = reader.GetString("Vlasnik");
                         dog.Email = reader.GetString("Email");
                         dog.Mob = reader.GetString("Mob");
-                        dog.Slika2 = GetSlika(reader, 2);
+                        dog.Slika2 = reader.GetString("Slika2");//GetSlika(reader, 2);
                         dog.Opstina = reader.GetString("Opstina");
                         dog.Grad = reader.GetString("Grad");
                         dog.Drzava = reader.GetString("Drzava");
                         dog.Vlasnik = reader.GetString("Vlasnik");
-
+                        dog.Kind = reader.GetString("Kind");
                         allDogs.Add(dog);
                     }
                 }
@@ -136,26 +174,27 @@ namespace dogfinderapi2
         private static List<DogPreview> getAllDogPreview()
         {
             List<DogPreview> allDogs = new List<DogPreview>();
-            try
-            {
-                mySqlConnection.Open();
-                MySqlCommand command = new MySqlCommand("Select * from dogs", mySqlConnection);
-                using (MySqlDataReader reader = command.ExecuteReader())
+          
+                using (mySqlConnection = new MySqlConnection(MySqlConnectionString))
                 {
-                    while (reader.Read())
+                    mySqlConnection.Open();
+                    MySqlCommand command = new MySqlCommand("Select * from dogs where Found = 0", mySqlConnection);
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        DogPreview dog = new DogPreview();
-                        dog._Id = reader.GetString(0);
-                        dog.Name = reader.GetString("Name");
-                        dog.Slika1 = reader.GetString("Slika1");//GetSlika(reader, 1);
-                        allDogs.Add(dog);
+                        while (reader.Read())
+                        {
+                            DogPreview dog = new DogPreview();
+                            dog._Id = reader.GetString(0);
+                            dog.Name = reader.GetString("Name");
+                            dog.Slika1 = reader.GetString("Slika1"); //GetSlika(reader, 1);
+                            dog.Tezina = reader.GetString("Weight");
+                            dog.Rasa = reader.GetString("Kind");
+                            allDogs.Add(dog);
+                        }
                     }
                 }
-            }
-            finally
-            {
-                mySqlConnection.Close();
-            }
+                
+             allDogs.Sort((x,y) => System.String.Compare(x.Rasa, y.Rasa, System.StringComparison.Ordinal));
             return allDogs;
         }
 
@@ -185,13 +224,11 @@ namespace dogfinderapi2
             
         }
 
-
         private static void RefreshCache()
         {
-            memoryCache["DogsPreview"] = null;
-            memoryCache["dogs"] = null;
+            memoryCache.Remove("DogsPreview");
+            memoryCache.Remove("dogs");
         }
         #endregion
-
     }
 }

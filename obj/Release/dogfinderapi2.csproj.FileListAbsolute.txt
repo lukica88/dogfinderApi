@@ -66,3 +66,8 @@ E:\Projects\dogfinderapi\dogfinderapi2\bin\zh-Hant\System.Spatial.resources.dll
 E:\Projects\dogfinderapi\dogfinderapi2\obj\Release\dogfinderapi2.csprojResolveAssemblyReference.cache
 E:\Projects\dogfinderapi\dogfinderapi2\obj\Release\dogfinderapi2.dll
 E:\Projects\dogfinderapi\dogfinderapi2\obj\Release\dogfinderapi2.pdb
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Http.WebHost.dll
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Http.WebHost.xml
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Net.Http.Formatting.dll
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Web.Routing.dll
+E:\Projects\dogfinderapi\dogfinderapi2\bin\System.Net.Http.Formatting.xml

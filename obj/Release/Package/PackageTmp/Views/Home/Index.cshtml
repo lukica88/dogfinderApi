@@ -3,7 +3,7 @@
     <script src="~/Scripts/jquery-1.8.2.js"></script>
     <script src="~/Scripts/knockout-2.2.0.js"></script>
     <script>
-        var url = "http://localhost:49816/api/Dog";
+        var url = "http://dogfinderapi.com/api/Dog";
         var Model = null;
         var Model = function() {
             var self = this;
@@ -35,15 +35,26 @@
             ko.applyBindings(Model,document.getElementById('mojdiv'));
         });
     </script>
-    <div id="mojdiv">
-        <ul data-bind="foreach: dogs">
-            <li>
-                <span data-bind="text: name"></span>
-                <span data-bind="text: kind"> </span>
-                <img data-bind="attr:{src: 'data:image/png;base64,' + slika1}, click:$root.xx" />
-            </li>
-        </ul>
-        <br>
-        <button onclick="getAll()">getAll</button>
+</div>
+<div style="top:12%">
+    <div class="form-group">
+        <p >
+            <button type="button" class="btn btn-default" aria-label="Left Align" onclick="document.location.href='izgubio'">
+                <h1 style="font-family:cursive"><b>Izgubio</b></h1>
+                <h6 style="font-family:cursive">
+                    *Ukoliko ste izgubili ljubimica molimo klikom na sapicu, popunite formu
+                </h6>
+                <img style="width:50%" src="~/Content/sapica_crvena.png" alt="Pronasao">
+            </button>
+        </p>
+        <p>
+            <button style="border: none"  type="button" class="btn btn-default" aria-label="Left Align" onclick="document.location.href='/pronasao'">
+                <h1 style="font-family:cursive"><b>Pronasao</b></h1>
+                <h6 style="font-family:cursive">
+                    *Klikom na sapicu prikazace vam se lista svih izgubljenih pasa
+                </h6>
+                <img style="width:50%" src="~/Content/sapica_zelena.png" alt="Pronasao">
+            </button>
+        </p>
     </div>
 </div>
